@@ -2,7 +2,7 @@
 
 [English](README.md) | 日本語
 
-cc-web-stack は、エージェントが読んで実行するためのメタリポジトリです。宿主の利用者の環境にある既存のリポジトリ、または新しく作るリポジトリを、Claude Code が完全に自律して運用できるリポジトリへ作り上げます。
+cc-web-stack は、エージェントが読んで実行するためのメタリポジトリです。宿主の利用者の環境にある既存のリポジトリ、または新しく作るリポジトリを、Claude Code が完全に自律して運用できるリポジトリへ作り上げます。対象は Web システムに特化します。
 
 ## 目的
 
@@ -16,7 +16,36 @@ Claude Code に作業を任せるとき、人はその都度、規約・検証�
 ## 対象
 
 - **読み手**: Claude Code。人はエージェントに、このリポジトリを読ませて対象のリポジトリを指示するだけにする。
-- **対象のリポジトリ**: 宿主の環境にある既存のリポジトリ、または新しく作るリポジトリ。
+- **対象のリポジトリ**: 宿主の環境にある既存のリポジトリ、または新しく作るリポジトリ。Web システムに限る。
+
+### 推奨する技術スタック
+
+第一推奨は次の組み合わせです。新しく作るリポジトリはこれで作り、既存のリポジトリはこれを目標に寄せます。
+
+| 領域 | 第一推奨 |
+|---|---|
+| フレームワーク | Next.js 16 |
+| UI | React 19 |
+| 言語 | TypeScript 7 |
+
+### TypeScript 7 と TypeScript 6 を並べて入れる
+
+TypeScript 7.0 には、プログラムから呼ぶ API がありません。typescript-eslint は TypeScript 7 を検出すると起動しません（8.70.1 で確認）。そのため、TypeScript 公式が案内する npm の alias で、7 と 6 を並べて入れます。
+
+```json
+"devDependencies": {
+  "@typescript/native": "npm:typescript@7.0.2",
+  "typescript": "npm:@typescript/typescript6@6.0.2"
+}
+```
+
+| 用途 | 使う版 |
+|---|---|
+| `tsc`（型検査の関門） | TypeScript 7 |
+| typescript-eslint（型情報を使う lint） | TypeScript 6 の API |
+| `next build` の型検査 | TypeScript 6（Next.js は `typescript` パッケージの CLI を使うため） |
+
+TypeScript 7.1 で API が入り、typescript-eslint がそれに対応したら、並べる構成を外して TypeScript 7 だけにします。
 
 ## 提供するもの
 
